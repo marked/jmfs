@@ -26,6 +26,9 @@ import tivo.disk.Storage;
 
 public class ContinuousLogicalView extends AbstractView {
 	private List<Info> storage = new ArrayList<Info>();
+	public String toString() {
+		return ("storage=" + storage + " getSize()=" + getSize() );
+	}
 	
 	protected List<Info> getStorage() {
 		return storage;

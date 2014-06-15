@@ -18,6 +18,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package tivo.disk;
+import tivo.io.JavaLog;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -27,6 +28,8 @@ import tivo.io.Writable;
 
 
 public class PartitionEntry implements Writable, Cloneable {
+	private static final JavaLog log = JavaLog.getLog( PartitionEntry.class );
+
 	protected static final int	NAME_SIZE		= 32;
 	protected static final int	TYPE_SIZE		= 32;
 	protected static final int	PROCESSOR_SIZE	= 16;
@@ -93,11 +96,11 @@ public class PartitionEntry implements Writable, Cloneable {
 		signaturePad				=	in.readUnsignedShort();
 		partitionMapSizeBlocks		=	in.readInt();
 		startBlock					=	Utils.getUnsigned( in.readInt() );
-		sizeBlocks					=	Utils.getUnsigned( in.readInt() );
+		sizeBlocks = Utils.getUnsigned( in.readInt() );
 										in.readFully( nameBytes );
 										in.readFully( typeBytes );
 		logicalStartBlock			=	Utils.getUnsigned( in.readInt() );
-		logicalSizeBlocks			=	Utils.getUnsigned( in.readInt() );
+		setLogicalSizeBlocks (Utils.getUnsigned( in.readInt() ));
 		status						=	in.readInt();
 		bootStartBlock				=	in.readInt();
 		bootSizeBytes				=	in.readInt();
@@ -211,6 +214,8 @@ public class PartitionEntry implements Writable, Cloneable {
 	}
 
 	public void setLogicalSizeBlocks(long logicalSizeBlocks) {
+		if (0 == logicalSizeBlocks)
+		logicalSizeBlocks = sizeBlocks;
 		this.logicalSizeBlocks = logicalSizeBlocks;
 	}
 
@@ -380,7 +385,7 @@ public class PartitionEntry implements Writable, Cloneable {
 						+	"bootLoadAddress=%08X:%08X\0"
 						+	"bootEntryAddress=%08X:%08X\0"
 						+	"bootCRC=0x%08X"
-						+	"\0pad=%s"
+						//+	"\0pad=%s"
 						+	"\0processorBytes=%s"
 							, number
 							, signature
@@ -398,7 +403,7 @@ public class PartitionEntry implements Writable, Cloneable {
 							, bootLoadAddress, bootLoadAddress2
 							, bootEntryAddress, bootEntryAddress2
 							, bootCRC
-							, Utils.dump( pad )
+							//, Utils.dump( pad )
 							, Utils.dump( processorBytes )
 				)
 			) 

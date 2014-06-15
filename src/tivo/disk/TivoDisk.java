@@ -18,8 +18,9 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package tivo.disk;
-
-import java.io.RandomAccessFile;
+import tivo.io.JavaLog;
+//import java.io.RandomAccessFile;
+import tivo.io.BiRandomAccessFile;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,17 @@ import tivo.io.Utils;
 import tivo.mfs.MfsHeader;
 
 public class TivoDisk extends AppleDisk {
-	public static final ByteOrder BYTE_ORDER = ByteOrder.BIG_ENDIAN;
+	public static ByteOrder BYTE_ORDER;
+	public static void setReverseMode(Boolean b) {
+		if (b)
+			BYTE_ORDER = ByteOrder.LITTLE_ENDIAN; // Intel / Roamio
+		else {
+			BYTE_ORDER = ByteOrder.BIG_ENDIAN; // Moto / Premiere
+		}
+	}
+
+        private static final JavaLog log = JavaLog.getLog( TivoDisk.class );
+
 	
 	private List<PartitionEntry>	mfsPartitions;
 	private MfsHeader				mfsHeader;
@@ -65,6 +76,7 @@ public class TivoDisk extends AppleDisk {
 	}
 
 	public boolean is64() {
+		//return true ; // marked
 		return (mfsHeader != null) && (mfsHeader.getHeader() != null) && mfsHeader.getHeader().is64();
 	}
 
@@ -109,6 +121,9 @@ public class TivoDisk extends AppleDisk {
 	}
 	
 	private boolean isValidRoot( MfsHeader h ) {
+                log.debug("TD isValidRoot %s", h);
+		
+
 		if( (h == null) || !h.isValidCrc() )
 			return false;
 		
@@ -120,7 +135,8 @@ public class TivoDisk extends AppleDisk {
 		return (firstNum != null) && (firstNum == h.getParent().getNumber());
 	}
 	
-	private MfsHeader loadHeader( RandomAccessFile img, List<PartitionEntry> plist ) throws Exception {
+	private MfsHeader loadHeader( BiRandomAccessFile img, List<PartitionEntry> plist ) throws Exception {
+                log.debug("TD loadHeader");
 		MfsHeader header = null;
 		
 		if( plist != null ) {

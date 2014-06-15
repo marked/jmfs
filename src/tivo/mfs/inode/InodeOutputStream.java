@@ -22,7 +22,8 @@ package tivo.mfs.inode;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
+//import java.io.RandomAccessFile;
+import tivo.io.BiRandomAccessFile;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class InodeOutputStream extends OutputStream {
 	private Extent				currentBlock = null; // pointer to the current extent
 	private long				blockIdx = 0; // block index in the current extent
 	private int					byteCount = 0; // count how many bytes left in the current block - will be reset to AppleDisk.BLOCK_SIZE on first write 
-	private RandomAccessFile	out = null;
+	private BiRandomAccessFile	out = null;
 	
 	public InodeOutputStream( View view, List<Extent> datablocks ) throws IOException {
 		this( view, datablocks, 0 );
@@ -122,7 +123,7 @@ public class InodeOutputStream extends OutputStream {
 	
 	
 	
-	private RandomAccessFile seekNextDatablock() throws IOException {
+	private BiRandomAccessFile seekNextDatablock() throws IOException {
 		blockIdx++;
 		while( (currentBlock == null) || (blockIdx >= currentBlock.getLength()) ) { // who knows, may be there are 0-length blocks?
 			if( !dataBlocks.hasNext() )

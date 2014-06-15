@@ -21,7 +21,8 @@ package tivo.disk;
 
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.RandomAccessFile;
+//import java.io.RandomAccessFile;
+import tivo.io.BiRandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +46,8 @@ public class AppleDisk extends Storage implements Writable {
 	
 	public AppleDisk( String name ) throws Exception {
 		this( name, false );
+                log.debug("AD const 1");
+
 	}
 	
 	// creates a new disk - does not read
@@ -54,6 +57,7 @@ public class AppleDisk extends Storage implements Writable {
 		this.partitions	= createEmptyPartitionMap();
 		this.name		= logicalName;
 		this.freeSpace	= calculateFreeSpace();
+		log.debug("AD const 2");
 	}
 	
 	public AppleDisk( String name, boolean writable ) throws Exception {
@@ -67,6 +71,8 @@ public class AppleDisk extends Storage implements Writable {
 		if( this.name == null )
 			this.name = name;
 		this.freeSpace	= calculateFreeSpace();
+                log.debug("AD const 3");
+
 	}
 
 	public Block0 getBlock0() {
@@ -113,7 +119,7 @@ public class AppleDisk extends Storage implements Writable {
 	}
 	
 	public DataOutput write() throws Exception {
-		RandomAccessFile img = super.getImg();
+		BiRandomAccessFile img = super.getImg();
 		img.seek( 0L );
 		block0.write( img );
 		
@@ -207,6 +213,7 @@ public class AppleDisk extends Storage implements Writable {
 				totalEntries = pe.getPartitionMapSizeBlocks();
 			pe.setNumber( n );
 			partitions.add( pe );
+			log.debug("%d %s", n, pe);
 		}
 		
 		return partitions;
@@ -244,8 +251,7 @@ public class AppleDisk extends Storage implements Writable {
 	}
 	
 	private long calculateFreeSpace() throws Exception {
-		if( log.isDebugEnabled() ) // so it does not do unnecessary calls
-			log.debug( "storageSize=%d, nextFreeBlock=%d, free=%d", super.getSize(), getNextFreeBlock(), super.getSize() - (getNextFreeBlock() * AppleDisk.BLOCK_SIZE));
+		log.debug( "storageSize=%d, nextFreeBlock=%d, free=%d", super.getSize(), getNextFreeBlock(), super.getSize() - (getNextFreeBlock() * AppleDisk.BLOCK_SIZE));
 		return super.getSize() - (getNextFreeBlock() * AppleDisk.BLOCK_SIZE);
 	}
 }

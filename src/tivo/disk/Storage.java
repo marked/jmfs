@@ -18,12 +18,15 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package tivo.disk;
-
-import java.io.RandomAccessFile;
+import tivo.io.JavaLog;
+//import java.io.RandomAccessFile;
+import tivo.io.BiRandomAccessFile;
 
 public class Storage {
+        private static final JavaLog log = JavaLog.getLog( TivoDisk.class );
+
 	private String				name;
-	private RandomAccessFile	img;
+	private BiRandomAccessFile	img;
 	
 	public Storage( String name ) throws Exception {
 		this( name, false );
@@ -31,14 +34,14 @@ public class Storage {
 	
 	public Storage( String name, boolean writable ) throws Exception {
 		this.name	= name;
-		this.img	= new RandomAccessFile( name, (writable ? "rw" : "r") );
+		this.img	= new BiRandomAccessFile( name, (writable ? "rw" : "r") );
 	}	
 
 	public String getName() {
 		return name;
 	}
 
-	public RandomAccessFile getImg() {
+	public BiRandomAccessFile getImg() {
 		return img;
 	}
 

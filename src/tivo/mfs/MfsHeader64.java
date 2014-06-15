@@ -19,6 +19,8 @@
 */
 package tivo.mfs;
 
+import tivo.io.JavaLog;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 
@@ -26,6 +28,7 @@ import tivo.io.Utils;
 import tivo.zone.ZoneHeader64;
 
 public class MfsHeader64 extends MfsHeader {
+        private static final JavaLog log = JavaLog.getLog( MfsHeader64.class );
 	public static final int PARTITION_LIST_SIZE  = 132;
 	public static final int SIZE                 = (16 * Integer.SIZE/8) + (4 * Long.SIZE/8) + PARTITION_LIST_SIZE + ZoneHeader64.SIZE;
 
@@ -73,10 +76,10 @@ public class MfsHeader64 extends MfsHeader {
         fill5       =  in.readInt();
         fill6       =  in.readInt();
         super.setPartitionList( readPartitionList( in ) );
-        super.setTotalSectors(  in.readLong() );
+        super.setTotalSectors(  in.readLong() ); //telemark per ggieske
         super.setLogStart(   in.readLong() );
-        zoneMapType =  in.readInt();
         super.setLogStamp(   in.readInt() );
+        zoneMapType =  in.readInt();
         unkStart    =  in.readLong();
         fill7       =  in.readLong();
         super.setZoneMap( new ZoneHeader64( in ) );
@@ -88,6 +91,8 @@ public class MfsHeader64 extends MfsHeader {
         fill11      =  in.readInt();
         fill12      =  in.readInt();
         pad         =  in.readInt();
+
+        log.debug("MfsHeader64 constructed: %s", this);
 
 		return this;
     }

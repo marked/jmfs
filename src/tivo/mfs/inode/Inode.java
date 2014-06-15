@@ -108,10 +108,10 @@ public class Inode implements Readable<Inode>, Writable, Checksummable {
 			size			= Utils.getUnsigned( in.readInt() );			
 			blocksize		= Utils.getUnsigned( in.readInt() );      
 			blockused		= Utils.getUnsigned( in.readInt() );      
-			lastmodified	= Utils.getUnsigned( in.readInt() );	
-			type			= InodeType.fromInt( in.readUnsignedByte() );
-			unk6			= in.readByte();
+			lastmodified	= Utils.getUnsigned( in.readInt() );	//marked
 			beef			= in.readShort();
+			unk6			= in.readByte();
+			type			= InodeType.fromInt( in.readUnsignedByte() );
 			sig				= Utils.getUnsigned( in.readInt() );
 			checksum		= Utils.getUnsigned( in.readInt() );
 			flags			= Utils.getUnsigned( in.readInt() );

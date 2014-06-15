@@ -18,6 +18,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 package tivo.mfs;
+import tivo.io.JavaLog;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -26,7 +27,8 @@ import tivo.io.Utils;
 import tivo.zone.ZoneHeader32;
 
 public class MfsHeader32 extends MfsHeader {
-	public static final int PARTITION_LIST_SIZE	= 128;
+	        private static final JavaLog log = JavaLog.getLog( MfsHeader32.class );
+public static final int PARTITION_LIST_SIZE	= 128;
 	public static final int SIZE				= (19 * Integer.SIZE/8) + PARTITION_LIST_SIZE + ZoneHeader32.SIZE;
 
 	private int		off08;
@@ -69,6 +71,7 @@ public class MfsHeader32 extends MfsHeader {
 	
 	@Override
 	public MfsHeader32 readData( DataInput in ) throws Exception {
+		log.debug("MfsHeader32 constructor");
 		super.readData( in ); // will skip or read if necessary
 		
 		off08			=	in.readInt();

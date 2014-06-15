@@ -33,10 +33,18 @@ import tivo.view.Extent;
 import tivo.view.MfsView;
 import tivo.zone.Zone;
 
+import tivo.io.BiDataInputStream;
+import tivo.io.BiRandomAccessFile;
+
 @SuppressWarnings("unused")
 public class MfsLayout {
 	
 	public static void main(String[] args) {
+boolean Roamio = true;
+tivo.io.BiDataInputStream.setReverseMode(Roamio);
+tivo.io.BiRandomAccessFile.setReverseMode(Roamio);
+tivo.disk.TivoDisk.setReverseMode(Roamio);
+
 		try  {
 //			Mfs.VALIDATE_ZONES = false;
 			Mfs m = new Mfs( args );

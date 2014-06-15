@@ -26,7 +26,8 @@ import java.io.DataOutput;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.RandomAccessFile;
+//import java.io.RandomAccessFile;
+import tivo.io.BiRandomAccessFile;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -42,6 +43,7 @@ import tivo.view.PhysicalAddress;
 import tivo.view.View;
 
 public class Utils {
+	private static final JavaLog log = JavaLog.getLog( AppleDisk.class );
 	public static final int SIZEOF_INT = Integer.SIZE/8;
 	
     public static class DataFormat {
@@ -199,7 +201,9 @@ public class Utils {
 		T t = read( in, r, buf, offset+readAheadSize, readSize );
 		if( t instanceof Checksummable ) {
 			Checksummable c = (Checksummable)t;
+			log.debug("Checksum %s ? %s",  String.format("0x%8s", Long.toHexString(calculateCrc(buf, c.getChecksumOffset()))) ,  String.format("0x%8s", Long.toHexString(c.getChecksum())));
 			c.setValidCrc( calculateCrc(buf, c.getChecksumOffset()) == c.getChecksum() );
+			log.debug("Checksum %s ? %s",  String.format("0x%8s", Long.toHexString(calculateCrc(buf, c.getChecksumOffset()))) ,  String.format("0x%8s", Long.toHexString(c.getChecksum())));
 		}
 		
 		return t;
@@ -454,18 +458,18 @@ public class Utils {
 	public static PhysicalAddress getValidPhysicalAddress( View view, long logicalBlock ) throws IOException {
 		PhysicalAddress		address	= view.toPhysical( logicalBlock );
 		if( (address == null) || (address.getStorage() == null) )
-			throw new IOException( "Logical block is located beyond the current storage: block=" + logicalBlock + ", view=" + view );
+			throw new IOException( "Logical block is located beyond the current storage: block=" + logicalBlock + ", view=" + view + " PhysicalAddress=" + address );
 		if( address.getStorage().getImg() == null )
 			throw new IOException( "Physical storage for block=" + logicalBlock + " (physical=" + address.getAddress() + ") is invalid" );
 		return address;
 	}
 	
-	public static RandomAccessFile seekBlock( PhysicalAddress address ) throws IOException {
+	public static BiRandomAccessFile seekBlock( PhysicalAddress address ) throws IOException {
 		return seekBlock( address.getStorage(), address.getAddress() );
 	}
 	
-	public static RandomAccessFile seekBlock( Storage storage, long block ) throws IOException {
-		RandomAccessFile img = (storage == null) ? null : storage.getImg();
+	public static BiRandomAccessFile seekBlock( Storage storage, long block ) throws IOException {
+		BiRandomAccessFile img = (storage == null) ? null : storage.getImg();
 		if( img == null )
 			throw new EOFException( "File not found - storage has not been initialized" );
 		
@@ -473,7 +477,8 @@ public class Utils {
 		return img;
 	}
 	
-	public static RandomAccessFile seekToLogicalBlock( View v, long logicalBlock ) throws IOException {
+	public static BiRandomAccessFile seekToLogicalBlock( View v, long logicalBlock ) throws IOException {
+		log.debug("v=" + v + " logicalBlock=" + logicalBlock);
 		return seekBlock( getValidPhysicalAddress( v, logicalBlock ) );
 	}
 	

@@ -49,9 +49,10 @@ public class MfsHeaderHeader implements Readable<MfsHeaderHeader>, Writable, Che
 	}
 
 	public MfsHeaderHeader readData(DataInput in) throws Exception {
-		state		= in.readInt();
 		magic		= in.readInt();
+		state		= in.readInt(); //0x00; //in.readInt(); // telemark
 		checksum	= Utils.getUnsigned( in.readInt() );
+		//checksum	= in.readInt() ;
 		
 		return this;
 	}

@@ -22,11 +22,13 @@ package tivo;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
+import tivo.io.BiDataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
+//import java.io.RandomAccessFile;
+import tivo.io.BiRandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
@@ -111,7 +113,7 @@ public class Mfs {
 	}
 	
 	public void writeInode( Inode inode ) throws Exception {
-		RandomAccessFile file = Utils.seekToLogicalBlock( inodes, inode.getId() );
+		BiRandomAccessFile file = Utils.seekToLogicalBlock( inodes, inode.getId() );
 		Utils.write( file, inode );
 		Utils.write( file, inode ); // backup
 	}
@@ -224,7 +226,7 @@ public class Mfs {
 		return processor.isDone();
 	}
 	
-	public DataInputStream getInodeInput( Inode inode ) throws IOException {
+	public BiDataInputStream getInodeInput( Inode inode ) throws IOException {
 		InputStream i = null;
 		
 		if( !inode.isDataInBlock() )
@@ -232,7 +234,7 @@ public class Mfs {
 		else
 			i = new ByteArrayInputStream( inode.getInblockData() );
 		
-		return new DataInputStream( i );
+		return new BiDataInputStream( i );
 	}
 	
 	public DataOutputStream getInodeOutput( Inode inode ) throws IOException {
@@ -341,6 +343,7 @@ public class Mfs {
 		
 		disks = allDisks;
 		mfs = createView( allMfsPartitions );
+                log.debug("MFS.java boot.getMfsHeader().getZoneMap()=" + boot.getMfsHeader().getZoneMap() );
 		zones = loadZones( boot.getMfsHeader().getZoneMap() );
 		
 		return this;
@@ -454,7 +457,7 @@ public class Mfs {
 	}
 
 	public Inode findInode( long inode ) throws Exception {
-		RandomAccessFile file = Utils.seekToLogicalBlock( inodes, inode );
+		BiRandomAccessFile file = Utils.seekToLogicalBlock( inodes, inode );
 		Inode i = Utils.read( file, Inode.class );
 		if( !i.isValidCrc() ) { // one block is already read so read right the next one - backup
 			i = Utils.read( file, Inode.class );
@@ -476,7 +479,7 @@ public class Mfs {
 		int	size = (int)(inode.getDataSizeBytes() & (long)Integer.MAX_VALUE); // in bytes
 
 		ByteArrayOutputStream	out = null;
-		DataInputStream			in	= null;
+		BiDataInputStream			in	= null;
 		
 		try {
 			out = new ByteArrayOutputStream( size );

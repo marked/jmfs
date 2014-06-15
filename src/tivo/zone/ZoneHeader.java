@@ -66,6 +66,7 @@ public abstract class ZoneHeader implements Readable<ZoneHeader>, Writable {
     }
     public boolean isValid() {
     	return (getSector() != 0) && (getSbackup() != 0xDEADBEEFL);
+    	//return (getSector() != 0) && (getSbackup() != 0xDEADBEEFL);
     }
 
     public boolean is64() {
@@ -82,11 +83,13 @@ public abstract class ZoneHeader implements Readable<ZoneHeader>, Writable {
 					+	"length=%d\0"
 					+	"size=%d\0"
 					+	"min=%d"
+					+	"isValid=%b"
 					    , sector
 					    , sbackup
 					    , length
 					    , size
 					    , min
+						,isValid()
 				)
 			) 
 			.append( '}' );

@@ -20,7 +20,8 @@
 package tivo.io;
 
 public interface Checksummable {
-	public static final byte[]	MAGIC			=	{ (byte)0xDE, (byte)0xAD, (byte)0xF0, (byte)0x0D }; // deadfood
+	//public static final byte[]	MAGIC			=	{ (byte)0xDE, (byte)0xAD, (byte)0xF0, (byte)0x0D }; // deadfood
+	public static final byte[]	MAGIC			=	{ (byte)0x0D, (byte)0xF0, (byte)0xAD, (byte)0xDE }; // deadfood
 	public static final long	MAGIC_NUMBER	=	(((long)MAGIC[0] & 0xFF) << 24)
 												|	(((long)MAGIC[1] & 0xFF) << 16)
 												|	(((long)MAGIC[2] & 0xFF) << 8)

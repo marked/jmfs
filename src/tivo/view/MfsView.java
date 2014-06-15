@@ -59,9 +59,6 @@ public class MfsView extends ContinuousLogicalView {
 	}
 	
 	
-	
-	
-	
 	private List<PartitionEntry> partitions = new ArrayList<PartitionEntry>();
 	
 	private static class PartitionExtent extends PhysicalExtent {

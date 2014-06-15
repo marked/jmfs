@@ -19,6 +19,7 @@
 */
 package tivo.disk;
 
+import tivo.io.JavaLog;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ import tivo.io.Writable;
 
 public class Block0 implements Writable, Cloneable
 {	
+        private static final JavaLog log = JavaLog.getLog( Block0.class );
+
 	public static short APPLE_BLOCK0_SIGNATURE = (short)0x1492;
 
 	private static final int	BOOT_PARAM_SIZE	= 128;
@@ -63,6 +66,7 @@ public class Block0 implements Writable, Cloneable
 		*/
 
 		signature					=	in.readUnsignedShort();
+		log.debug("%d ? %d", signature,  APPLE_BLOCK0_SIGNATURE);
 		if( !isValid() ) // do not continue if not a valid Block0
 			return;
 
@@ -89,6 +93,7 @@ public class Block0 implements Writable, Cloneable
 	}
 
 	public boolean isValid() {
+                log.debug("Block0 isValid %s", signature == APPLE_BLOCK0_SIGNATURE);
 		return (signature == APPLE_BLOCK0_SIGNATURE);
 	}
 
