@@ -156,7 +156,8 @@ public class AppleDisk extends Storage implements Writable {
 			throw new Exception( "Can not add partition - will not fit on disk: partition.size=" + partition.getSizeBlocks() + ", freeSpace=" + freeSpace );
 		
 		partition.setNumber		( partitions.size()+1 );
-		partition.setStartBlock	( (int)getNextFreeBlock() );
+	//	partition.setStartBlock	( (int)getNextFreeBlock() ); 
+		partition.setStartBlock	(      getNextFreeBlock() ); // 4TB
 		
 		partitions.add( partition );
 		
@@ -251,7 +252,7 @@ public class AppleDisk extends Storage implements Writable {
 	}
 	
 	private long calculateFreeSpace() throws Exception {
-		log.debug( "storageSize=%d, nextFreeBlock=%d, free=%d", super.getSize(), getNextFreeBlock(), super.getSize() - (getNextFreeBlock() * AppleDisk.BLOCK_SIZE));
+		log.debug( "storageSize=%d, nextFreeBlock=%d, free=%d", super.getSize(), getNextFreeBlock(), super.getSize() - (long)(getNextFreeBlock() * AppleDisk.BLOCK_SIZE));
 		return super.getSize() - (getNextFreeBlock() * AppleDisk.BLOCK_SIZE);
 	}
 }
