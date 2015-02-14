@@ -37,6 +37,8 @@ public class PartitionEntry implements Writable, Cloneable {
 
 	public static final String	MFS_TYPE					= "MFS";
 	public static final int		APPLE_PARTITION_SIGNATURE	= 0x504D;
+	public static final int 	BIG_PARTITION_SIGNATURE 	= 0x504E;
+
 
 	public static final int LOGICAL_SIZE_OFFSET = 2*Short.SIZE/8 + 4*Integer.SIZE/8 + NAME_SIZE + TYPE_SIZE;
 	public static final int LOGICAL_SIZE_SIZE	= Integer.SIZE/8;
@@ -95,6 +97,8 @@ public class PartitionEntry implements Writable, Cloneable {
 		signature					=	in.readUnsignedShort();
 		signaturePad				=	in.readUnsignedShort();
 		partitionMapSizeBlocks		=	in.readInt();
+if (isSignature32()) {
+ 		  log.debug("Signature32");
 		startBlock					=	Utils.getUnsigned( in.readInt() );
 		sizeBlocks = Utils.getUnsigned( in.readInt() );
 										in.readFully( nameBytes );
@@ -111,6 +115,31 @@ public class PartitionEntry implements Writable, Cloneable {
 		bootCRC						=	in.readInt();
 										in.readFully( processorBytes );
 										in.readFully( pad );
+} else if(isSignature64()) {
+                   log.debug("Signature64");
+                   startBlock=in.readLong();
+                   sizeBlocks=in.readLong();
+                   in.readFully(nameBytes);
+                   in.readFully(typeBytes);
+                   logicalStartBlock=in.readLong();
+                   setLogicalSizeBlocks(in.readLong());
+                   in.skipBytes(512-2-2-4-8-8-32-32-8-8);
+ 
+//in.readLong();
+//in.readLong();
+//in.readLong();
+//in.readLong();
+//in.readLong();
+//in.readLong();
+//bootCRC=in.readInt();
+//status=in.readInt();
+//in.readFully(processorBytes);
+//in.readFully(pad64);
+
+ } else {
+   log.debug("Signature NA");
+}
+
 	}
 	
 	public int getNumber() {
@@ -312,8 +341,16 @@ public class PartitionEntry implements Writable, Cloneable {
 	}
 
 	public boolean isSignatureValid() {
-		return signature == APPLE_PARTITION_SIGNATURE;
+		return((signature==APPLE_PARTITION_SIGNATURE)||(signature==BIG_PARTITION_SIGNATURE));
 	}
+
+	public boolean isSignature32(){
+		return(signature==APPLE_PARTITION_SIGNATURE);
+	}
+	public boolean isSignature64(){
+		return(signature==BIG_PARTITION_SIGNATURE);
+	}
+
 
 	public DataOutput write(DataOutput out) throws Exception {
 		out.writeShort	( signature );
